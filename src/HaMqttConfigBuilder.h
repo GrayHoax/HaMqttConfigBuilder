@@ -8,17 +8,22 @@ private:
     String key;
     String str;
     double num;
+    bool asSource;
   };
   std::vector<Elem> elements;
 
 public:
   // Add an element to the config paylaod
   HaMqttConfigBuilder& add(const String& key, const String& str) {
-    elements.push_back({key, str, 0});
+    elements.push_back({key, str, 0, false});
+    return *this;
+  }
+  HaMqttConfigBuilder& add(const String& key, const String& str, const bool asSource) {
+    elements.push_back({key, str, 0, asSource});
     return *this;
   }
   HaMqttConfigBuilder& add(const String& key, const double num) {
-    elements.push_back({key, "", num});
+    elements.push_back({key, "", num, false});
     return *this;
   }
 
@@ -35,9 +40,9 @@ public:
       str.concat("\":");
       
       if (elem.str.length() > 0) {
-        str.concat('"');
+        if (!elem.asSource) str.concat('"');
         str.concat(elem.str);
-        str.concat('"');
+        if (!elem.asSource) str.concat('"');
       } else {
         str.concat(elem.num);
       }
